@@ -1,30 +1,23 @@
 import type { FastifySchema } from 'fastify'
-import type { ObjectSchema } from 'fast-json-stringify'
+
+import S from 'fluent-json-schema'
 
 export const signUpSchema: FastifySchema = {
-    body: {
-        type: 'object',
-        required: ['username', 'password', 'profile.email', 'profile.name'],
-        properties: {
-            username: { type: 'string' },
-            password: { type: 'string' },
-            profile: {
-                type: 'object',
-                email: { type: 'string' },
-                name: { type: 'string' },
-                bio: { type: 'string' }
-            }
-        }
-    } as ObjectSchema
+    body: S.object()
+        .prop('username', S.string().required().minLength(3).maxLength(25))
+        .prop('password', S.string().required().minLength(8).maxLength(64))
+        .prop(
+            'profile',
+            S.object()
+                .required()
+                .prop('email', S.string().required().format('email'))
+                .prop('name', S.string().required().minLength(3).maxLength(128))
+                .prop('bio', S.string().maxLength(256))
+        )
 }
 
 export const signInSchema: FastifySchema = {
-    body: {
-        type: 'object',
-        required: ['username', 'password'],
-        properties: {
-            username: { type: 'string' },
-            password: { type: 'string' }
-        }
-    } as ObjectSchema
+    body: S.object()
+        .prop('username', S.string().required().minLength(3).maxLength(25))
+        .prop('password', S.string().required().minLength(8).maxLength(64))
 }

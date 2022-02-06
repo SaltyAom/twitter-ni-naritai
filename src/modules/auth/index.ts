@@ -1,6 +1,6 @@
 import type { FastifyPluginCallback } from 'fastify'
 
-import { isEmail, refreshToken } from '@services'
+import { refreshToken } from '@services'
 import { signUp, signIn } from './services'
 
 import { signUpSchema, signInSchema } from './models'
@@ -14,18 +14,17 @@ const auth: FastifyPluginCallback = (app, _, done) => {
             schema: signUpSchema
         },
         async ({ body }, res) => {
-            if (!isEmail(body.profile.email))
-                return res.status(401).send({ error: 'Email is required' })
+            return body
 
-            const user = await signUp(body)
-            if (user instanceof Error)
-                return res.status(401).send({ error: user.message })
+            // const user = await signUp(body)
+            // if (user instanceof Error)
+            //     return res.status(401).send({ error: user.message })
 
-            const { username } = user
+            // const { username } = user
 
-            return {
-                username
-            }
+            // return {
+            //     username
+            // }
         }
     )
 
