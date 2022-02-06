@@ -1,4 +1,4 @@
-import { prisma, hash, verify } from '~/services'
+import { prisma, hash, verify } from '@services'
 
 import type { SignUpInput } from './types'
 

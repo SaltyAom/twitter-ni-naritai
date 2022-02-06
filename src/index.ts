@@ -9,8 +9,8 @@ import cookie from 'fastify-cookie'
 
 import { resolve } from 'path'
 
-import { auth, base, profile, tweet } from '~/modules'
-import { run, mutateAuthHook } from '~/services'
+import { auth, base, profile, tweet } from '@modules'
+import { run, mutateAuthHook } from '@services'
 
 const app = fastify()
 

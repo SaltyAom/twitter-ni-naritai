@@ -12,3 +12,13 @@ export const createTweetSchema: FastifySchema = {
         }
     } as ObjectSchema
 }
+
+export const favoriteTweetSchema: FastifySchema = {
+    body: {
+        type: 'object',
+        required: ['id'],
+        properties: {
+            id: { type: 'number' },
+        }
+    } as ObjectSchema
+}

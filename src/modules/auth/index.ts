@@ -1,6 +1,6 @@
 import type { FastifyPluginCallback } from 'fastify'
 
-import { isEmail, refreshToken } from '~/services'
+import { isEmail, refreshToken } from '@services'
 import { signUp, signIn } from './services'
 
 import { signUpSchema, signInSchema } from './models'

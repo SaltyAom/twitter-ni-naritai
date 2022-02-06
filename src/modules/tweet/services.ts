@@ -1,6 +1,10 @@
-import { prisma } from '~/services'
+import { prisma } from '@services'
 
-import type { CreateTweetInput, GetTweetInput } from './types'
+import type {
+    CreateTweetInput,
+    FavoriteTweetInput,
+    GetTweetInput
+} from './types'
 
 export const newTweet = async (data: CreateTweetInput) => {
     if (
@@ -47,14 +51,10 @@ export const getTweet = async (id: GetTweetInput) =>
                     }
                 }
             },
-            favoriteBy: {
+            _count: {
                 select: {
-                    _count: true
-                }
-            },
-            retweet: {
-                select: {
-                    _count: true
+                    favoriteBy: true,
+                    retweet: true
                 }
             },
             author: {
@@ -65,6 +65,20 @@ export const getTweet = async (id: GetTweetInput) =>
                             image: true
                         }
                     }
+                }
+            }
+        }
+    })
+
+export const favoriteTweet = async ({ id, userId }: FavoriteTweetInput) =>
+    await prisma.tweet.update({
+        where: {
+            id: +id
+        },
+        data: {
+            favoriteBy: {
+                connect: {
+                    id: userId
                 }
             }
         }

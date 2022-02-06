@@ -42,5 +42,5 @@ model Tweet {
   favoriteBy        User[]    @relation("favorite")
   retweetId         Int?
   retweetFrom       Tweet?    @relation("retweet", fields: [retweetId], references: [id])
-  retweet           Tweet?    @relation("retweet")
+  retweet           Tweet[]   @relation("retweet")
 }

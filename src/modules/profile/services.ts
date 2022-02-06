@@ -1,4 +1,4 @@
-import { prisma } from '~/services'
+import { prisma } from '@services'
 
 import type { GetProfileInput } from './types'
 

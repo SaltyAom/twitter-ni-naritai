@@ -1,6 +1,6 @@
 import type { onRequestHookHandler } from 'fastify'
 
-import { verifyToken } from '~/services'
+import { verifyToken } from '@services'
 
 export const mutateAuthHook: onRequestHookHandler = async (req) => {
     const {

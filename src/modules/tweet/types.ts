@@ -14,3 +14,14 @@ export interface GetTweetHandler extends RouteShorthandMethod {
         id: GetTweetInput
     }
 }
+
+export interface FavoriteTweetInput {
+    id: Tweet['id']
+    userId: number
+}
+
+export interface FavoriteTweetHandler extends RouteShorthandMethod {
+    Body: {
+        id: FavoriteTweetInput['id']
+    }
+}
