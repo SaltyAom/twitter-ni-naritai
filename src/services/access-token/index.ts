@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid'
-import { redis } from '~/services'
+import { redis } from '@services'
 
 export const refreshToken = async ({
     id,
