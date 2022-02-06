@@ -15,10 +15,14 @@ const tweet: FastifyPluginCallback = (app, _, done) => {
     app.put<CreateTweetHandler>(
         '/new',
         {
-            preHandler: authGuardHook,
-            schema: createTweetSchema
+            preHandler: authGuardHook
         },
         async ({ body, userId }, res) => {
+            if (!body.content && !body.retweetId)
+                return res
+                    .status(401)
+                    .send({ error: 'Either content or retweetId is required' })
+
             const tweet = await newTweet({ ...body, authorId: userId! })
             if (tweet instanceof Error)
                 return res.status(401).send(tweet.message)

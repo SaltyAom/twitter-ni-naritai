@@ -34,7 +34,7 @@ model Profile {
 
 model Tweet {
   id                Int       @id @default(autoincrement())
-  content           String?   @db.VarChar(255)
+  content           String?   @db.VarChar(280)
   createdAt         DateTime  @default(now())
   author            User      @relation("ownTweet", fields: [authorId], references: [id])
   authorId          Int

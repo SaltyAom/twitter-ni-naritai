@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Tweet" ALTER COLUMN "content" SET DATA TYPE VARCHAR(280);

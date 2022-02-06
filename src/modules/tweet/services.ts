@@ -9,16 +9,14 @@ import type {
 export const newTweet = async (data: CreateTweetInput) => {
     if (
         data.retweetId &&
-        !(
-            await prisma.tweet.findUnique({
-                where: {
-                    id: data.retweetId
-                },
-                select: {
-                    _count: true
-                }
-            })
-        )?._count
+        !(await prisma.tweet.findUnique({
+            where: {
+                id: data.retweetId
+            },
+            select: {
+                id: true
+            }
+        }))
     )
         return new Error("Tweet doesn't exist")
 
