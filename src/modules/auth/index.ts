@@ -14,17 +14,15 @@ const auth: FastifyPluginCallback = (app, _, done) => {
             schema: signUpSchema
         },
         async ({ body }, res) => {
-            return body
+            const user = await signUp(body)
+            if (user instanceof Error)
+                return res.status(401).send({ error: user.message })
 
-            // const user = await signUp(body)
-            // if (user instanceof Error)
-            //     return res.status(401).send({ error: user.message })
+            const { username } = user
 
-            // const { username } = user
-
-            // return {
-            //     username
-            // }
+            return {
+                username
+            }
         }
     )
 
