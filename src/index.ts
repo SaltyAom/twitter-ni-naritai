@@ -1,6 +1,4 @@
-import env from 'dotenv'
-env.config()
-
+import '@services/env'
 import fastify from 'fastify'
 
 import helmet from 'fastify-helmet'

@@ -1,6 +1,6 @@
 import type { FastifyPluginCallback } from 'fastify'
 
-import { authGuardHook } from '@services'
+import { authGuardHook, validateSchema } from '@services'
 import { newTweet, getTweet, favoriteTweet } from './services'
 
 import { createTweetSchema, favoriteTweetSchema } from './models'
@@ -15,8 +15,7 @@ const tweet: FastifyPluginCallback = (app, _, done) => {
     app.put<CreateTweetHandler>(
         '/new',
         {
-            preHandler: authGuardHook,
-            schema: createTweetSchema
+            preHandler: [authGuardHook, validateSchema(createTweetSchema)]
         },
         async ({ body, userId }, res) => {
             const tweet = await newTweet({ ...body, authorId: userId! })
@@ -34,7 +33,7 @@ const tweet: FastifyPluginCallback = (app, _, done) => {
 
     app.post<FavoriteTweetHandler>(
         '/favorite',
-        { preHandler: authGuardHook, schema: favoriteTweetSchema },
+        { preHandler: [authGuardHook, validateSchema(favoriteTweetSchema)] },
         async ({ body: { id }, userId }) =>
             await favoriteTweet({
                 id,

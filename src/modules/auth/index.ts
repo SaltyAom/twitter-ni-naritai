@@ -1,6 +1,6 @@
 import type { FastifyPluginCallback } from 'fastify'
 
-import { authGuardHook, refreshToken } from '@services'
+import { authGuardHook, refreshToken, validateSchema } from '@services'
 import { signUp, signIn, changePassword } from './services'
 
 import { signUpSchema, signInSchema, changePasswordSchema } from './models'
@@ -11,7 +11,7 @@ const auth: FastifyPluginCallback = (app, _, done) => {
     app.put<SignUpHandler>(
         '/signup',
         {
-            schema: signUpSchema
+            preHandler: validateSchema(signUpSchema)
         },
         async ({ body }, res) => {
             const user = await signUp(body)
@@ -29,7 +29,7 @@ const auth: FastifyPluginCallback = (app, _, done) => {
     app.post<SignUpHandler>(
         '/signin',
         {
-            schema: signInSchema
+            preHandler: validateSchema(signInSchema)
         },
         async ({ body, cookies: { accessToken } }, res) => {
             const user = await signIn(body)
@@ -57,8 +57,7 @@ const auth: FastifyPluginCallback = (app, _, done) => {
     app.patch<ChangePasswordHandler>(
         '/change-password',
         {
-            schema: changePasswordSchema,
-            preHandler: authGuardHook
+            preHandler: [authGuardHook, validateSchema(changePasswordSchema)]
         },
         async ({ body, userId }, res) => {
             const user = await changePassword({ ...body, userId: userId! })

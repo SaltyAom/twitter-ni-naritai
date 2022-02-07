@@ -19,6 +19,7 @@ specifiers:
   fastify-helmet: ^7.0.1
   fastify-static: ^4.5.0
   fluent-json-schema: ^3.0.1
+  fluent-schema-validator: ^0.0.0
   ioredis: ^4.28.4
   jest: ^27.4.7
   nanoid: ^3.2.0
@@ -39,6 +40,7 @@ dependencies:
   fastify-helmet: 7.0.1
   fastify-static: 4.5.0
   fluent-json-schema: 3.0.1
+  fluent-schema-validator: 0.0.0
   ioredis: 4.28.4
   nanoid: 3.2.0
 
@@ -2269,6 +2271,10 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       deepmerge: 4.2.2
+    dev: false
+
+  /fluent-schema-validator/0.0.0:
+    resolution: {integrity: sha512-tffK931U0NJBbvPVvyQ0NeyIvs0QiWKreb6400H1j6RlqzANgpQhr1o5mZjC3MvaOlkmU/GovC6v4g+aiA+R6g==}
     dev: false
 
   /form-data/3.0.1:

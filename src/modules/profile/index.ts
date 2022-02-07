@@ -1,5 +1,6 @@
 import type { FastifyPluginCallback } from 'fastify'
 
+import { authGuardHook, validateSchema } from '@services'
 import {
     editProfile,
     followProfile,
@@ -16,7 +17,6 @@ import type {
     GetFollowHandler,
     GetProfileHandler
 } from './types'
-import { authGuardHook } from '@services'
 
 const auth: FastifyPluginCallback = (app, _, done) => {
     app.get<GetProfileHandler>(
@@ -36,7 +36,9 @@ const auth: FastifyPluginCallback = (app, _, done) => {
 
     app.post<FollowProfileHandler>(
         '/follow',
-        { schema: followProfileSchema, preHandler: authGuardHook },
+        {
+            preHandler: [authGuardHook, validateSchema(followProfileSchema)]
+        },
         async ({ body: { id }, userId }, res) => {
             const followed = await followProfile({ id, userId: userId! })
             if (followed instanceof Error)
@@ -51,7 +53,9 @@ const auth: FastifyPluginCallback = (app, _, done) => {
 
     app.post<FollowProfileHandler>(
         '/unfollow',
-        { schema: followProfileSchema, preHandler: authGuardHook },
+        {
+            preHandler: [authGuardHook, validateSchema(followProfileSchema)]
+        },
         async ({ body: { id }, userId }, res) => {
             const followed = await unfollowProfile({ id, userId: userId! })
             if (followed instanceof Error)
@@ -66,7 +70,7 @@ const auth: FastifyPluginCallback = (app, _, done) => {
 
     app.patch<EditProfileHandler>(
         '/edit',
-        { schema: editProfileSchema, preHandler: authGuardHook },
+        { preHandler: [authGuardHook, validateSchema(editProfileSchema)] },
         async ({ body, userId }, res) => {
             const profile = await editProfile({ ...body, userId: userId! })
             if (profile instanceof Error)
