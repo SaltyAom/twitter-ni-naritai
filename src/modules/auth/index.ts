@@ -1,11 +1,11 @@
 import type { FastifyPluginCallback } from 'fastify'
 
-import { refreshToken } from '@services'
-import { signUp, signIn } from './services'
+import { authGuardHook, refreshToken } from '@services'
+import { signUp, signIn, changePassword } from './services'
 
-import { signUpSchema, signInSchema } from './models'
+import { signUpSchema, signInSchema, changePasswordSchema } from './models'
 
-import type { SignUpHandler } from './types'
+import type { ChangePasswordHandler, SignUpHandler } from './types'
 
 const auth: FastifyPluginCallback = (app, _, done) => {
     app.put<SignUpHandler>(
@@ -33,7 +33,6 @@ const auth: FastifyPluginCallback = (app, _, done) => {
         },
         async ({ body, cookies: { accessToken } }, res) => {
             const user = await signIn(body)
-
             if (user instanceof Error)
                 return res.status(403).send({ error: user.message })
 
@@ -52,6 +51,21 @@ const auth: FastifyPluginCallback = (app, _, done) => {
             return {
                 username
             }
+        }
+    )
+
+    app.patch<ChangePasswordHandler>(
+        '/change-password',
+        {
+            schema: changePasswordSchema,
+            preHandler: authGuardHook
+        },
+        async ({ body, userId }, res) => {
+            const user = await changePassword({ ...body, userId: userId! })
+            if (user instanceof Error)
+                return res.status(403).send({ error: user.message })
+
+            return user
         }
     )
 

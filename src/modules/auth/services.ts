@@ -1,44 +1,24 @@
 import { prisma, hash, verify } from '@services'
 
-import type { SignUpInput } from './types'
+import type { ChangePasswordInput, SignUpInput } from './types'
 
 export const signUp = async (data: SignUpInput) => {
-    if (
-        await prisma.user.count({
-            where: {
-                OR: [
-                    {
-                        username: data.username
-                    },
-                    {
-                        profile: {
-                            email: data.profile.email
-                        }
-                    },
-
-                    {
-                        profile: {
-                            name: data.profile.name
-                        }
+    try {
+        return await prisma.user.create({
+            data: {
+                username: data.username,
+                password: await hash(data.password, data.username),
+                profile: {
+                    create: {
+                        ...data.profile,
+                        alias: data.profile.name
                     }
-                ]
-            }
-        })
-    )
-        return new Error('User already exists')
-
-    return await prisma.user.create({
-        data: {
-            username: data.username,
-            password: await hash(data.password, data.username),
-            profile: {
-                create: {
-                    ...data.profile,
-                    joinAt: undefined
                 }
             }
-        }
-    })
+        })
+    } catch (err) {
+        return new Error('User already exists')
+    }
 }
 
 export const signIn = async ({ username, password }: SignUpInput) => {
@@ -56,8 +36,41 @@ export const signIn = async ({ username, password }: SignUpInput) => {
     if (!user) return new Error('User not found')
 
     const { password: userPassword, ...userData } = user
-    if (!verify(userPassword, password, username))
+    if (!(await verify(userPassword, password, username)))
         return new Error('Invalid password')
 
     return userData
+}
+
+export const changePassword = async ({
+    userId,
+    password,
+    newPassword
+}: ChangePasswordInput) => {
+    const user = await prisma.user.findUnique({
+        select: {
+            username: true,
+            password: true
+        },
+        where: {
+            id: userId
+        }
+    })
+    if (!user) return new Error('User not found')
+
+    const { username, password: currentPassword } = user
+
+    if (!(await verify(currentPassword, password, username)))
+        return new Error('Invalid password')
+
+    await prisma.user.update({
+        where: {
+            id: userId
+        },
+        data: {
+            password: await hash(newPassword, username)
+        }
+    })
+
+    return { username }
 }

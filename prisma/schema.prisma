@@ -14,7 +14,7 @@ model User {
   id            Int       @id @default(autoincrement())
   username      String    @db.VarChar(25) @unique()
   password      String    @db.VarChar(96)
-  profile       Profile?
+  profile       Profile?  
   tweet         Tweet[]   @relation("ownTweet")
   following     User[]    @relation("follow", references: [id])
   followedBy    User[]    @relation("follow", references: [id])
@@ -22,10 +22,11 @@ model User {
 }
 
 model Profile {
-  id      Int       @id @default(autoincrement())
-  email   String    @unique
-  name    String    @unique @db.VarChar(128)
-  bio     String?   @default("") @db.VarChar(256)
+  alias   String    @id 
+  id      Int       @unique @default(autoincrement())
+  email   String    @unique @db.VarChar(128)
+  name    String    @db.VarChar(50)
+  bio     String?   @default("") @db.VarChar(180)
   image   String?
   cover   String?
   joinAt  DateTime  @default(now())

@@ -1,12 +1,16 @@
-import { prisma } from '@services'
+import { batch, prisma } from '@services'
 
-import type { GetProfileInput, FollowProfileInput } from './types'
+import type {
+    GetProfileInput,
+    FollowProfileInput,
+    GetFollowInput,
+    EditProfileInput
+} from './types'
 
 export const getProfile = async (where: GetProfileInput) =>
     await prisma.profile.findUnique({
         where,
         select: {
-            id: true,
             name: true,
             bio: true,
             cover: true,
@@ -60,6 +64,71 @@ export const getProfile = async (where: GetProfileInput) =>
         }
     })
 
+export const getFollowers = async ({ alias, batch: index }: GetFollowInput) => {
+    const { from } = batch(+index)
+
+    return await prisma.profile.findUnique({
+        where: {
+            alias
+        },
+        select: {
+            id: true,
+            user: {
+                select: {
+                    followedBy: {
+                        skip: from,
+                        take: 25,
+                        select: {
+                            profile: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    cover: true,
+                                    bio: true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    })
+}
+
+export const getFollowings = async ({
+    alias,
+    batch: index
+}: GetFollowInput) => {
+    const { from } = batch(+index)
+
+    return await prisma.profile.findUnique({
+        where: {
+            alias
+        },
+        select: {
+            id: true,
+            user: {
+                select: {
+                    following: {
+                        skip: from,
+                        take: 25,
+                        select: {
+                            profile: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    cover: true,
+                                    bio: true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    })
+}
+
 export const followProfile = async ({ id, userId }: FollowProfileInput) => {
     if (id === userId) return new Error("You can't follow yourself")
 
@@ -103,4 +172,17 @@ export const unfollowProfile = async ({ id, userId }: FollowProfileInput) => {
             }
         }
     })
+}
+
+export const editProfile = async ({ userId, ...data }: EditProfileInput) => {
+    try {
+        return await prisma.profile.update({
+            where: {
+                id: userId
+            },
+            data
+        })
+    } catch (err) {
+        return new Error('Unable to edit profile')
+    }
 }
