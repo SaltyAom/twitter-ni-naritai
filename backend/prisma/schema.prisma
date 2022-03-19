@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  username      String    @db.VarChar(25) @unique()
+  password      String    @db.VarChar(96)
+  profile       Profile?  
+  tweet         Tweet[]   @relation("ownTweet")
+  following     User[]    @relation("follow", references: [id])
+  followedBy    User[]    @relation("follow", references: [id])
+  favorite      Tweet[]   @relation("favorite", references: [id])
+}
+
+model Profile {
+  alias   String    @id @db.VarChar(36)
+  id      Int       @unique @default(autoincrement())
+  email   String    @unique @db.VarChar(128)
+  name    String    @db.VarChar(50)
+  bio     String?   @default("") @db.VarChar(180)
+  image   String?
+  cover   String?
+  joinAt  DateTime  @default(now())
+  user    User      @relation(fields: [id], references: [id])
+}
+
+model Tweet {
+  id                Int       @id @default(autoincrement())
+  content           String?   @db.VarChar(280)
+  createdAt         DateTime  @default(now())
+  author            User      @relation("ownTweet", fields: [authorId], references: [id])
+  authorId          Int
+  images            String[]
+  favoriteBy        User[]    @relation("favorite")
+  retweetId         Int?
+  retweetFrom       Tweet?    @relation("retweet", fields: [retweetId], references: [id])
+  retweet           Tweet[]   @relation("retweet")
+}
