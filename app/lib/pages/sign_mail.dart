@@ -4,23 +4,32 @@ import 'package:flutter/material.dart';
 import 'package:niku/namespace.dart' as n;
 
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:vrouter/vrouter.dart';
 
+import 'package:app/stores/stores.dart';
 import 'package:app/models/validation.dart';
 import 'package:app/services/dio.dart';
 import 'package:app/styles/sign.dart';
 
-class SignMail extends HookWidget {
+class SignMail extends HookConsumerWidget {
   const SignMail({Key? key}) : super(key: key);
 
   @override
-  build(context) {
+  build(context, ref) {
     final email = useTextEditingController();
 
     final form = useMemoized(() => GlobalKey<FormState>());
 
     final isLoading = useState(false);
     final emailError = useState<String?>(null);
+
+    useEffect(() {
+      final store = ref.read(registrationProvider) as Registration;
+      email.text = store.email;
+
+      return () {};
+    }, []);
 
     FutureOr<bool> validateEmail() async {
       try {
@@ -60,6 +69,8 @@ class SignMail extends HookWidget {
         return;
       }
 
+      ref.read(registrationProvider.notifier).copyWith(email: email.text);
+
       isLoading.value = false;
       emailError.value = null;
 
@@ -70,7 +81,9 @@ class SignMail extends HookWidget {
       body: Form(
         key: form,
         child: n.Column([
-          SignStyles.back(context),
+          SignStyles.back(context, () {
+            ref.read(registrationProvider.notifier).copyWith(email: email.text);
+          }),
           n.Text("Add your email")
             ..fontSize = 36
             ..w200,
@@ -86,7 +99,12 @@ class SignMail extends HookWidget {
             ..isFilled
             ..emailKeyboard
             ..maxLines = 1
-            ..errorText = emailError.value,
+            ..errorText = emailError.value
+            ..focusNode = SignStyles.save(ref, (action) {
+              action.copyWith(
+                email: email.text,
+              );
+            }),
           n.Button(
             SignStyles.buttonText("Next", isLoading.value),
           )

@@ -4,17 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:niku/namespace.dart' as n;
 
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:vrouter/vrouter.dart';
 
-import 'package:app/models/validation.dart';
+import 'package:app/stores/stores.dart';
+import 'package:app/models/models.dart';
 import 'package:app/services/dio.dart';
 import 'package:app/styles/styles.dart';
 
-class SignUpPage extends HookWidget {
+class SignUpPage extends HookConsumerWidget {
   const SignUpPage({Key? key}) : super(key: key);
 
   @override
-  build(context) {
+  build(context, ref) {
     final username = useTextEditingController();
     final password = useTextEditingController();
     final confirmPassword = useTextEditingController();
@@ -23,6 +25,16 @@ class SignUpPage extends HookWidget {
     final usernameError = useState<String?>(null);
 
     final form = useMemoized(() => GlobalKey<FormState>());
+
+    useEffect(() {
+      final store = ref.read(registrationProvider) as Registration;
+
+      username.text = store.username;
+      password.text = store.password;
+      confirmPassword.text = store.confirmPassword;
+
+      return () {};
+    }, []);
 
     FutureOr<bool> validateUsername() async {
       try {
@@ -71,6 +83,12 @@ class SignUpPage extends HookWidget {
         return;
       }
 
+      ref.read(registrationProvider.notifier).copyWith(
+            username: username.text,
+            password: password.text,
+            confirmPassword: confirmPassword.text,
+          );
+
       isLoading.value = false;
       usernameError.value = null;
 
@@ -81,7 +99,13 @@ class SignUpPage extends HookWidget {
       body: Form(
         key: form,
         child: n.Column([
-          SignStyles.back(context),
+          SignStyles.back(context, () {
+            ref.read(registrationProvider.notifier).copyWith(
+                  username: username.text,
+                  password: password.text,
+                  confirmPassword: confirmPassword.text,
+                );
+          }),
           n.Text("Sign Up")
             ..fontSize = 36
             ..w200
@@ -91,19 +115,28 @@ class SignUpPage extends HookWidget {
             ..validator = SignStyles.validate
             ..filled = true
             ..maxLines = 1
-            ..errorText = usernameError.value,
+            ..errorText = usernameError.value
+            ..focusNode = SignStyles.save(ref, (action) {
+              action.copyWith(username: username.text);
+            }),
           n.TextFormField.label("Password")
             ..controller = password
             ..validator = SignStyles.validate
             ..asPassword
             ..filled = true
-            ..maxLines = 1,
+            ..maxLines = 1
+            ..focusNode = SignStyles.save(ref, (action) {
+              action.copyWith(password: password.text);
+            }),
           n.TextFormField.label("Confirm Password")
             ..controller = confirmPassword
             ..validator = validateConfirmPassword
             ..asPassword
             ..filled = true
-            ..maxLines = 1,
+            ..maxLines = 1
+            ..focusNode = SignStyles.save(ref, (action) {
+              action.copyWith(confirmPassword: confirmPassword.text);
+            }),
           n.Button(
             SignStyles.buttonText("Next", isLoading.value),
           )

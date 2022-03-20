@@ -1,4 +1,6 @@
+import 'package:app/stores/stores.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:vrouter/vrouter.dart';
 
@@ -12,10 +14,12 @@ class SignStyles {
     ..fullSize
     ..px = 16;
 
-  static back(BuildContext context) =>
+  static Widget back(BuildContext context, [Function? action]) =>
       n.Button.icon(const Text("Back"), const Icon(Icons.chevron_left))
         ..onPressed = () {
           context.vRouter.historyBack();
+
+          if (action != null) action();
         }
         ..splash = Colors.grey.shade200
         ..p = 0
@@ -61,4 +65,18 @@ class SignStyles {
           const SizedBox.shrink(),
       ])
         ..center;
+
+  static FocusNode save(
+    WidgetRef ref,
+    void Function(RegistrationState) action,
+  ) {
+    final node = FocusNode();
+
+    return node
+      ..addListener(() {
+        if (node.hasFocus) return;
+
+        action(ref.read(registrationProvider.notifier));
+      });
+  }
 }

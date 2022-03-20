@@ -1,15 +1,23 @@
-import 'package:app/pages/sign_mail.dart';
 import 'package:flutter/material.dart';
+
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:vrouter/vrouter.dart';
 import 'package:app/pages/pages.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  await Hive.initFlutter();
+
+  runApp(
+    const ProviderScope(
+      child: TwitterNiNaritai(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class TwitterNiNaritai extends StatelessWidget {
+  const TwitterNiNaritai({Key? key}) : super(key: key);
 
   @override
   build(context) {

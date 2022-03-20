@@ -1,20 +1,23 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:niku/namespace.dart' as n;
 
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:vrouter/vrouter.dart';
 
+import 'package:app/stores/stores.dart';
 import 'package:app/models/validation.dart';
 import 'package:app/services/dio.dart';
 import 'package:app/styles/sign.dart';
 
-class SignProfile extends HookWidget {
+class SignProfile extends HookConsumerWidget {
   const SignProfile({Key? key}) : super(key: key);
 
   @override
-  build(context) {
+  build(context, ref) {
     final alias = useTextEditingController();
     final name = useTextEditingController();
 
@@ -35,6 +38,15 @@ class SignProfile extends HookWidget {
         nameText.value = name.text;
       });
     });
+
+    useEffect(() {
+      final store = ref.read(registrationProvider) as Registration;
+
+      alias.text = store.alias;
+      name.text = store.name;
+
+      return () {};
+    }, []);
 
     final optionalText = aliasText.value.isNotEmpty && nameText.value.isEmpty
         ? "(default to '${alias.text}')"
@@ -62,6 +74,35 @@ class SignProfile extends HookWidget {
       }
     }
 
+    Future<bool> signUp() async {
+      try {
+        final store = ref.read(registrationProvider) as Registration;
+
+        final res = await dio.put(
+          "$api/auth/signup",
+          data: {
+            "username": store.username,
+            "password": store.password,
+            "profile": {
+              "alias": aliasText.value,
+              "email": store.email,
+              "name":
+                  nameText.value.isNotEmpty ? nameText.value : aliasText.value,
+            },
+          },
+        );
+
+        final isValid = res.data['username'] == store.username;
+        if (!isValid) aliasError.value = "Something went wrong";
+
+        return isValid;
+      } catch (err) {
+        aliasError.value = "Invalid form";
+
+        return false;
+      }
+    }
+
     Future<void> handleSubmit() async {
       if (isLoading.value) return;
 
@@ -79,17 +120,30 @@ class SignProfile extends HookWidget {
         return;
       }
 
+      if (!await signUp()) {
+        isLoading.value = false;
+        return;
+      }
+
       isLoading.value = false;
       aliasError.value = null;
 
       context.vRouter.to('/sign-complete');
+
+      final action = ref.read(registrationProvider.notifier);
+      action.reset();
     }
 
     return Scaffold(
       body: Form(
         key: form,
         child: n.Column([
-          SignStyles.back(context),
+          SignStyles.back(context, () {
+            ref.read(registrationProvider.notifier).copyWith(
+                  alias: alias.text,
+                  name: name.text,
+                );
+          }),
           n.Text("Add your profile")
             ..fontSize = 36
             ..w200,
@@ -105,12 +159,23 @@ class SignProfile extends HookWidget {
             ..validator = SignStyles.validate
             ..isFilled
             ..emailKeyboard
-            ..maxLines = 1,
+            ..maxLines = 1
+            ..errorText = aliasError.value
+            ..focusNode = SignStyles.save(ref, (action) {
+              action.copyWith(
+                alias: alias.text,
+              );
+            }),
           n.TextFormField.label("Name $optionalText")
             ..controller = name
             ..isFilled
             ..emailKeyboard
-            ..maxLines = 1,
+            ..maxLines = 1
+            ..focusNode = SignStyles.save(ref, (action) {
+              action.copyWith(
+                name: name.text,
+              );
+            }),
           n.Button(
             SignStyles.buttonText("Sign Up", isLoading.value),
           )

@@ -41,7 +41,7 @@ class SignInPage extends HookWidget {
             ..asPassword
             ..filled = true
             ..maxLines = 1,
-          n.Button(const Text("Login"))
+          n.Button(const Text("Sign In"))
             ..onPressed = handleSubmit
             ..fontSize = 18
             ..bold

@@ -33,13 +33,13 @@ dependencies:
   flutter_hooks: ^0.18.2+1
   niku: 2.2.0
 
+  hooks_riverpod: ^1.0.3
   vrouter: ^1.2.0+21
 
   hive: ^2.0.6
   hive_flutter: ^1.1.0
 
   dio: ^4.0.4
-
 
   freezed_annotation: ^1.1.0
   json_annotation: ^4.4.0
@@ -55,6 +55,7 @@ dev_dependencies:
   freezed: ^1.1.1
   build_runner: ^2.1.8
   json_serializable: ^6.1.5
+  hive_generator: ^1.1.2
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

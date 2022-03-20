@@ -15,10 +15,9 @@ class SignComplete extends StatelessWidget {
         n.Text("Sign Up Complete")
           ..fontSize = 36
           ..w200,
-        n.Text("Welcome to Twitter ni Naritai! We're glad to have you join.")
+        n.Text("Welcome to Twitter ni Naritai! We glad to have you here.")
           ..apply = SignStyles.label,
-        n.Text("Let's welcome you in with signing in")
-          ..apply = SignStyles.label,
+        n.Text("Let's start by signing you in")..apply = SignStyles.label,
         n.Button(n.Text("Sign In"))
           ..apply = SignStyles.submit
           ..onPressed = () {

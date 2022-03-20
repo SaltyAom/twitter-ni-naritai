@@ -1,8 +1,9 @@
-import 'package:app/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:niku/namespace.dart' as n;
 
 import 'package:vrouter/vrouter.dart';
+
+import 'package:app/styles/styles.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({Key? key}) : super(key: key);
@@ -22,20 +23,13 @@ class WelcomePage extends StatelessWidget {
         n.Text(
             "A side-project of a Twitter wanna-be created for educational purposes.")
           ..apply = SignStyles.label
-          ..mt = 12
-          ..mb = 36,
+          ..mb = 24,
         n.Button(const Text("Sign In"))
+          ..apply = SignStyles.submit
+          ..mb = 8
           ..onPressed = () {
             context.vRouter.to('/sign-in');
-          }
-          ..color = Colors.white
-          ..w500
-          ..fontSize = 18
-          ..py = 16
-          ..bg = Colors.blue
-          ..rounded
-          ..wFull
-          ..mb = 12,
+          },
         n.Button(const Text("Sign Up"))
           ..onPressed = () {
             context.vRouter.to('/sign-up');
@@ -50,6 +44,7 @@ class WelcomePage extends StatelessWidget {
       ])
         ..mainCenter
         ..crossStart
+        ..gap = 4
         ..px = 16,
     );
   }
