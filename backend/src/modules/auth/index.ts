@@ -36,20 +36,23 @@ const auth: FastifyPluginCallback = (app, _, done) => {
             if (user instanceof Error)
                 return res.status(403).send({ error: user.message })
 
-            const { id, username } = user
+            const { id, ...rest } = user
             const token = await refreshToken({
                 id,
                 previous: accessToken
             })
 
-            res.setCookie('accessToken', `${token},${id}`, {
+            const newToken = `${token},${id}`
+
+            res.setCookie('accessToken', newToken, {
                 httpOnly: true,
                 sameSite: true,
                 path: '/'
             })
 
             return {
-                username
+                ...rest,
+                token: newToken
             }
         }
     )

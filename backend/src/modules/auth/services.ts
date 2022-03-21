@@ -26,20 +26,37 @@ export const signIn = async ({ username, password }: SignUpInput) => {
         select: {
             id: true,
             username: true,
-            password: true
+            password: true,
+            profile: {
+                select: {
+                    alias: true,
+                    name: true,
+                    image: true
+                }
+            }
         },
         where: {
             username
         }
     })
 
-    if (!user) return new Error('User not found')
+    if (!user || !user.profile) return new Error('User not found')
 
-    const { password: userPassword, ...userData } = user
+    const {
+        id,
+        password: userPassword,
+        profile: { alias, name, image }
+    } = user
     if (!(await verify(userPassword, password, username)))
         return new Error('Invalid password')
 
-    return userData
+    return {
+        id,
+        username,
+        alias,
+        name,
+        image: image ?? ''
+    }
 }
 
 export const changePassword = async ({

@@ -5,9 +5,13 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:vrouter/vrouter.dart';
 import 'package:app/pages/pages.dart';
+import 'package:app/models/models.dart';
 
 void main() async {
   await Hive.initFlutter();
+
+  Hive.registerAdapter(ProfileAdapter());
+  Hive.registerAdapter(ProfileListAdapter());
 
   runApp(
     const ProviderScope(
@@ -31,8 +35,37 @@ class TwitterNiNaritai extends StatelessWidget {
       ),
       initialUrl: '/',
       routes: [
+        VGuard(
+          beforeEnter: (vRedirector) async {
+            final profile = await Hive.openBox<ProfileList>('profileList');
+
+            if (profile.isEmpty) {
+              profile.put(
+                'profileList',
+                ProfileList(
+                  active: null,
+                  profiles: [],
+                ),
+              );
+
+              return vRedirector.to("/sign");
+            }
+
+            final profileList = profile.get('profileList');
+
+            if (profileList?.active == null) {
+              vRedirector.to("/sign");
+            }
+          },
+          stackedRoutes: [
+            VWidget(
+              path: '/',
+              widget: const AppPage(),
+            ),
+          ],
+        ),
         VWidget(
-          path: '/',
+          path: '/sign',
           widget: const WelcomePage(),
           stackedRoutes: [
             VWidget(path: '/sign-in', widget: const SignInPage()),
