@@ -61,13 +61,32 @@ class SignInPage extends HookWidget {
             return;
           }
 
-          box.put(
-            'profileList',
-            ProfileList(
-              active: profileList.profiles.length,
-              profiles: [...profileList.profiles, profile],
-            ),
-          );
+          int? profileIndex;
+          // Find profile index if it exists
+          for (var i = 0; i < profileList.profiles.length; i++) {
+            if (profileList.profiles[i].username == profile.username) {
+              profileIndex = i;
+              break;
+            }
+          }
+
+          if (profileIndex != null) {
+            box.put(
+              'profileList',
+              ProfileList(
+                active: profileIndex,
+                profiles: profileList.profiles,
+              ),
+            );
+          } else {
+            box.put(
+              'profileList',
+              ProfileList(
+                active: profileList.profiles.length,
+                profiles: [...profileList.profiles, profile],
+              ),
+            );
+          }
 
           isLoading.value = false;
 
@@ -85,6 +104,9 @@ class SignInPage extends HookWidget {
           error.value = "Something went wrong";
         }
 
+        isLoading.value = false;
+      } catch (err) {
+        error.value = "Something went wrong";
         isLoading.value = false;
       }
     }

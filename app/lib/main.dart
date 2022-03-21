@@ -1,3 +1,4 @@
+import 'package:app/stores/stores.dart';
 import 'package:flutter/material.dart';
 
 import 'package:hive_flutter/hive_flutter.dart';
@@ -20,11 +21,11 @@ void main() async {
   );
 }
 
-class TwitterNiNaritai extends StatelessWidget {
+class TwitterNiNaritai extends HookConsumerWidget {
   const TwitterNiNaritai({Key? key}) : super(key: key);
 
   @override
-  build(context) {
+  build(context, ref) {
     return VRouter(
       title: 'Twitter ni Naritai',
       theme: ThemeData(
@@ -37,10 +38,11 @@ class TwitterNiNaritai extends StatelessWidget {
       routes: [
         VGuard(
           beforeEnter: (vRedirector) async {
-            final profile = await Hive.openBox<ProfileList>('profileList');
+            final box = await Hive.openBox<ProfileList>('profileList');
+            final profileList = box.get('profileList');
 
-            if (profile.isEmpty) {
-              profile.put(
+            if (box.isEmpty || profileList == null) {
+              box.put(
                 'profileList',
                 ProfileList(
                   active: null,
@@ -51,11 +53,13 @@ class TwitterNiNaritai extends StatelessWidget {
               return vRedirector.to("/sign");
             }
 
-            final profileList = profile.get('profileList');
-
-            if (profileList?.active == null) {
+            if (profileList.active == null) {
               vRedirector.to("/sign");
+              return;
             }
+
+            final profile = profileList.profiles[profileList.active!];
+            ref.read(currentProfileProvider.notifier).profile = profile;
           },
           stackedRoutes: [
             VWidget(
@@ -63,6 +67,11 @@ class TwitterNiNaritai extends StatelessWidget {
               widget: const AppPage(),
             ),
           ],
+        ),
+        VWidget(
+          path: '/account',
+          widget: const AccountPage(),
+          fullscreenDialog: true,
         ),
         VWidget(
           path: '/sign',

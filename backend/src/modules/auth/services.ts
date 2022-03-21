@@ -17,7 +17,7 @@ export const signUp = async (data: SignUpInput) => {
             }
         })
     } catch (err) {
-        return new Error('User already exists')
+        return new Error('Something went wrong')
     }
 }
 

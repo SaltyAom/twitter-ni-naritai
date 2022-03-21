@@ -13,7 +13,7 @@ datasource db {
 model User {
   id            Int       @id @default(autoincrement())
   username      String    @db.VarChar(25) @unique()
-  password      String    @db.VarChar(96)
+  password      String    @db.Char(32)
   profile       Profile?  
   tweet         Tweet[]   @relation("ownTweet")
   following     User[]    @relation("follow", references: [id])

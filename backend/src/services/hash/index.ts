@@ -29,10 +29,10 @@ const rawHash = async (value: string, pepper: string) =>
     })
 
 export const hash = async (value: string, pepper = '') =>
-    await rawHash(value, pepper).then((v) => v.toString())
+    await rawHash(value, pepper).then((v) => v.toString('base64'))
 
 export const verify = async (
     hashValue: string,
     value: string,
     pepper: string
-) => !!(Buffer.from(hashValue).compare(await rawHash(value, pepper)) + 1)
+) => !(Buffer.from(hashValue).compare(await rawHash(value, pepper)) + 1)

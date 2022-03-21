@@ -1,11 +1,12 @@
 import 'dart:async';
 
+import 'package:app/models/error.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:niku/namespace.dart' as n;
 
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:riverpod/riverpod.dart';
 import 'package:vrouter/vrouter.dart';
 
 import 'package:app/stores/stores.dart';
@@ -40,7 +41,7 @@ class SignProfile extends HookConsumerWidget {
     });
 
     useEffect(() {
-      final store = ref.read(registrationProvider) as Registration;
+      final store = ref.read(registrationProvider);
 
       alias.text = store.alias;
       name.text = store.name;
@@ -76,7 +77,7 @@ class SignProfile extends HookConsumerWidget {
 
     Future<bool> signUp() async {
       try {
-        final store = ref.read(registrationProvider) as Registration;
+        final store = ref.read(registrationProvider);
 
         final res = await dio.put(
           "$api/auth/signup",
@@ -96,8 +97,18 @@ class SignProfile extends HookConsumerWidget {
         if (!isValid) aliasError.value = "Something went wrong";
 
         return isValid;
+      } on DioError catch (err) {
+        try {
+          final res = APIError.fromJson(err.response?.data);
+
+          aliasError.value = res.error;
+        } catch (e) {
+          aliasError.value = "Something went wrong";
+        }
+
+        return false;
       } catch (err) {
-        aliasError.value = "Invalid form";
+        aliasError.value = "Something went wrong";
 
         return false;
       }

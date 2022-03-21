@@ -1,6 +1,8 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-final registrationProvider = StateNotifierProvider((_) => RegistrationState());
+final registrationProvider =
+    StateNotifierProvider<RegistrationState, Registration>(
+        (_) => RegistrationState());
 
 class RegistrationState extends StateNotifier<Registration> {
   RegistrationState() : super(const Registration());

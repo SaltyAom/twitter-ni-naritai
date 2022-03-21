@@ -10,7 +10,8 @@ class Profile {
     required this.username,
     required this.name,
     required this.alias,
-    this.image = '',
+    this.image =
+        'https://pbs.twimg.com/profile_images/1501586627906338818/0WKZDMPZ_400x400.jpg',
     required this.token,
   });
 
@@ -33,6 +34,24 @@ class Profile {
       _$ProfileFromJson(json);
 
   Map<String, dynamic> toJson() => _$ProfileToJson(this);
+
+  Profile copyWith({
+    String? username,
+    String? name,
+    String? alias,
+    String? image,
+    String? token,
+  }) =>
+      Profile(
+        username: username ?? this.username,
+        name: name ?? this.name,
+        alias: alias ?? this.alias,
+        image: image ??
+            (this.image.isNotEmpty
+                ? this.image
+                : 'https://pbs.twimg.com/profile_images/1501586627906338818/0WKZDMPZ_400x400.jpg'),
+        token: token ?? this.token,
+      );
 }
 
 @HiveType(typeId: 2)
@@ -47,4 +66,13 @@ class ProfileList {
 
   @HiveField(2)
   final List<Profile> profiles;
+
+  ProfileList copyWith({
+    int? active,
+    List<Profile>? profiles,
+  }) =>
+      ProfileList(
+        active: active == -1 ? null : active ?? this.active,
+        profiles: profiles ?? this.profiles,
+      );
 }
