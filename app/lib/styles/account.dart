@@ -1,4 +1,4 @@
-import 'package:app/models/profile.dart';
+import 'package:app/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:niku/namespace.dart' as n;
 
@@ -17,20 +17,20 @@ class AccountStyles {
       ),
     );
 
-  static n.ListTile profileTile(Profile profile) => n.ListTile()
+  static n.ListTile profileTile(User user) => n.ListTile()
     ..useLeading(
       () => n.Image.network(
-        profile.image.isNotEmpty
-            ? profile.image
+        user.image.isNotEmpty
+            ? user.image
             : "https://pbs.twimg.com/profile_images/1501586627906338818/0WKZDMPZ_400x400.jpg",
       )
         ..w = 40
         ..h = 40
         ..rounded,
     )
-    ..useTitle(() => n.Text(profile.name)..w600)
+    ..useTitle(() => n.Text(user.name)..w600)
     ..useSubtitle(
-      () => n.Text("@${profile.alias}")..color = Colors.grey.shade600,
+      () => n.Text("@${user.alias}")..color = Colors.grey.shade600,
     )
     ..dense = true
     ..px = 16

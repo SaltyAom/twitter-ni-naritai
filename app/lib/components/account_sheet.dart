@@ -15,14 +15,14 @@ class AccountSheet extends HookWidget {
 
   @override
   build(context) {
-    final profileBox = useState<Box<ProfileList>?>(null);
-    final profileListData = useState<ProfileList?>(null);
+    final profileBox = useState<Box<UserList>?>(null);
+    final profileListData = useState<UserList?>(null);
 
     final totalAccount = profileListData.value?.profiles.length ?? 0;
 
     useEffect(() {
       main() async {
-        final box = await Hive.openBox<ProfileList>('profileList');
+        final box = await Hive.openBox<UserList>('profileList');
         final profileList = box.get('profileList');
 
         profileBox.value = box;

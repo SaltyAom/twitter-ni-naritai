@@ -25,7 +25,7 @@ class SignMail extends HookConsumerWidget {
     final emailError = useState<String?>(null);
 
     useEffect(() {
-      final store = ref.read(registrationProvider) as Registration;
+      final store = ref.read(registrationProvider);
       email.text = store.email;
 
       return () {};

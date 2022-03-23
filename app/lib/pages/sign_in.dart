@@ -37,7 +37,7 @@ class SignInPage extends HookWidget {
         });
 
         try {
-          final profile = Profile.fromJson(res.data);
+          final profile = User.fromJson(res.data);
 
           if (profile.username != username.text) {
             error.value = "Username or password is incorrect";
@@ -45,13 +45,13 @@ class SignInPage extends HookWidget {
             return;
           }
 
-          final box = await Hive.openBox<ProfileList>('profileList');
+          final box = await Hive.openBox<UserList>('profileList');
           final profileList = box.get('profileList');
 
           if (profileList == null) {
             box.put(
               'profileList',
-              ProfileList(
+              UserList(
                 active: 0,
                 profiles: [profile],
               ),
@@ -73,7 +73,7 @@ class SignInPage extends HookWidget {
           if (profileIndex != null) {
             box.put(
               'profileList',
-              ProfileList(
+              UserList(
                 active: profileIndex,
                 profiles: profileList.profiles,
               ),
@@ -81,7 +81,7 @@ class SignInPage extends HookWidget {
           } else {
             box.put(
               'profileList',
-              ProfileList(
+              UserList(
                 active: profileList.profiles.length,
                 profiles: [...profileList.profiles, profile],
               ),

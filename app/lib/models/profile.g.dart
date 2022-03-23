@@ -3,108 +3,89 @@
 part of 'profile.dart';
 
 // **************************************************************************
-// TypeAdapterGenerator
-// **************************************************************************
-
-class ProfileAdapter extends TypeAdapter<Profile> {
-  @override
-  final int typeId = 1;
-
-  @override
-  Profile read(BinaryReader reader) {
-    final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
-    return Profile(
-      username: fields[1] as String,
-      name: fields[2] as String,
-      alias: fields[3] as String,
-      image: fields[4] as String,
-      token: fields[5] as String,
-    );
-  }
-
-  @override
-  void write(BinaryWriter writer, Profile obj) {
-    writer
-      ..writeByte(5)
-      ..writeByte(1)
-      ..write(obj.username)
-      ..writeByte(2)
-      ..write(obj.name)
-      ..writeByte(3)
-      ..write(obj.alias)
-      ..writeByte(4)
-      ..write(obj.image)
-      ..writeByte(5)
-      ..write(obj.token);
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ProfileAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
-}
-
-class ProfileListAdapter extends TypeAdapter<ProfileList> {
-  @override
-  final int typeId = 2;
-
-  @override
-  ProfileList read(BinaryReader reader) {
-    final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
-    return ProfileList(
-      active: fields[1] as int?,
-      profiles: (fields[2] as List).cast<Profile>(),
-    );
-  }
-
-  @override
-  void write(BinaryWriter writer, ProfileList obj) {
-    writer
-      ..writeByte(2)
-      ..writeByte(1)
-      ..write(obj.active)
-      ..writeByte(2)
-      ..write(obj.profiles);
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ProfileListAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
-}
-
-// **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Profile _$ProfileFromJson(Map<String, dynamic> json) => Profile(
-      username: json['username'] as String,
+ProfileNonUser _$ProfileNonUserFromJson(Map<String, dynamic> json) =>
+    ProfileNonUser(
       name: json['name'] as String,
-      alias: json['alias'] as String,
-      image: json['image'] as String,
-      token: json['token'] as String,
+      bio: json['bio'] as String,
+      cover: json['cover'] as String?,
+      email: json['email'] as String,
+      image: json['image'] as String?,
+      joinAt: json['joinAt'] as String,
     );
 
-Map<String, dynamic> _$ProfileToJson(Profile instance) => <String, dynamic>{
-      'username': instance.username,
+Map<String, dynamic> _$ProfileNonUserToJson(ProfileNonUser instance) =>
+    <String, dynamic>{
       'name': instance.name,
-      'alias': instance.alias,
+      'bio': instance.bio,
+      'cover': instance.cover,
+      'email': instance.email,
       'image': instance.image,
-      'token': instance.token,
+      'joinAt': instance.joinAt,
+    };
+
+ProfileUserNonUser _$ProfileUserNonUserFromJson(Map<String, dynamic> json) =>
+    ProfileUserNonUser(
+      count: ProfileUserCount.fromJson(json['_count'] as Map<String, dynamic>),
+      tweet: (json['tweet'] as List<dynamic>)
+          .map((e) => TweetNonAuthor.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$ProfileUserNonUserToJson(ProfileUserNonUser instance) =>
+    <String, dynamic>{
+      '_count': instance.count,
+      'tweet': instance.tweet,
+    };
+
+ProfileUserCount _$ProfileUserCountFromJson(Map<String, dynamic> json) =>
+    ProfileUserCount(
+      tweet: json['tweet'] as int,
+      followedBy: json['followedBy'] as int,
+      following: json['following'] as int,
+    );
+
+Map<String, dynamic> _$ProfileUserCountToJson(ProfileUserCount instance) =>
+    <String, dynamic>{
+      'tweet': instance.tweet,
+      'followedBy': instance.followedBy,
+      'following': instance.following,
+    };
+
+_$_Profile _$$_ProfileFromJson(Map<String, dynamic> json) => _$_Profile(
+      name: json['name'] as String,
+      bio: json['bio'] as String,
+      cover: json['cover'] as String?,
+      email: json['email'] as String,
+      image: json['image'] as String?,
+      joinAt: json['joinAt'] as String,
+      user: ProfileUser.fromJson(json['user'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$_ProfileToJson(_$_Profile instance) =>
+    <String, dynamic>{
+      'name': instance.name,
+      'bio': instance.bio,
+      'cover': instance.cover,
+      'email': instance.email,
+      'image': instance.image,
+      'joinAt': instance.joinAt,
+      'user': instance.user.toJson(),
+    };
+
+_$_ProfileUser _$$_ProfileUserFromJson(Map<String, dynamic> json) =>
+    _$_ProfileUser(
+      tweet: (json['tweet'] as List<dynamic>?)
+              ?.map((e) => Tweet.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      count: ProfileUserCount.fromJson(json['_count'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$_ProfileUserToJson(_$_ProfileUser instance) =>
+    <String, dynamic>{
+      'tweet': instance.tweet.map((e) => e.toJson()).toList(),
+      '_count': instance.count.toJson(),
     };

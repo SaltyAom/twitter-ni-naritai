@@ -39,6 +39,7 @@ export const getProfile = async (where: GetProfileInput) =>
                                         select: {
                                             profile: {
                                                 select: {
+                                                    alias: true,
                                                     name: true,
                                                     image: true
                                                 }
@@ -47,14 +48,10 @@ export const getProfile = async (where: GetProfileInput) =>
                                     }
                                 }
                             },
-                            favoriteBy: {
+                            _count: {
                                 select: {
-                                    _count: true
-                                }
-                            },
-                            retweet: {
-                                select: {
-                                    _count: true
+                                    favoriteBy: true,
+                                    retweet: true
                                 }
                             }
                         }

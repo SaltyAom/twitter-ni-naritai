@@ -7,7 +7,7 @@ import cookie from 'fastify-cookie'
 
 import { resolve } from 'path'
 
-import { auth, base, profile, registration, tweet } from '@modules'
+import { auth, base, feed, profile, registration, tweet } from '@modules'
 import { run, mutateAuthHook } from '@services'
 
 const app = fastify()
@@ -24,6 +24,9 @@ const main = () => {
         .register(base)
         .register(auth, {
             prefix: '/auth'
+        })
+        .register(feed, {
+            prefix: '/feed'
         })
         .register(profile, {
             prefix: '/profile'

@@ -27,7 +27,7 @@ class SignUpPage extends HookConsumerWidget {
     final form = useMemoized(() => GlobalKey<FormState>());
 
     useEffect(() {
-      final store = ref.read(registrationProvider) as Registration;
+      final store = ref.read(registrationProvider);
 
       username.text = store.username;
       password.text = store.password;

@@ -17,14 +17,14 @@ class AccountPage extends HookConsumerWidget {
 
   @override
   build(context, ref) {
-    final profileBox = useState<Box<ProfileList>?>(null);
-    final profileListData = useState<ProfileList?>(null);
+    final profileBox = useState<Box<UserList>?>(null);
+    final profileListData = useState<UserList?>(null);
 
     final totalAccount = profileListData.value?.profiles.length ?? 0;
 
     useEffect(() {
       main() async {
-        final box = await Hive.openBox<ProfileList>('profileList');
+        final box = await Hive.openBox<UserList>('profileList');
         final profileList = box.get('profileList');
 
         profileBox.value = box;
@@ -71,11 +71,6 @@ class AccountPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        systemOverlayStyle: SystemUiOverlayStyle.dark,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.black),
         leading: n.Button(n.Text("Edit"))..onPressed = () {},
         title: n.Text("Account")..color = Colors.grey.shade600,
         actions: [
@@ -96,9 +91,7 @@ class AccountPage extends HookConsumerWidget {
               ..apply = AccountStyles.profileTile(profile)
               ..trailing = ReorderableDragStartListener(
                 index: index,
-                child: n.Icon(
-                  Icons.drag_handle,
-                )..color = Colors.grey.shade400,
+                child: n.Icon(Icons.drag_handle)..color = Colors.grey.shade400,
               );
           },
           itemCount: totalAccount,
